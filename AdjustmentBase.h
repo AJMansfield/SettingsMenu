@@ -11,6 +11,7 @@ typedef void(*effect_t)(char&);
 
 class AdjustmentBase {
 public:
+	virtual ~AdjustmentBase(){};
 	// return true when exiting the adjustment
 	virtual exit_t action(action_t act, int value = 0) = 0;
 

@@ -8,8 +8,8 @@
 template<typename T>
 class Adjustment: public AdjustmentBase {
 public:
-	Adjustment(Adjuster<T>* adjuster, char* format, effect_t fx, size_t begin, size_t end):\
-			 _adj(adjuster), _fmt(format), fx(fx), _begin(begin), _end(end) {};
+	Adjustment(Adjuster<T>* adjuster, char* format, char* highlight, effect_t fx):\
+			 _adj(adjuster), _fmt(format), _hlt(highlight), fx(fx) {};
 
 	exit_t action(action_t act, int value = 0);
 
@@ -20,9 +20,8 @@ public:
 private:
 	Adjuster<T>* _adj;
 	char* _fmt;
+	char* _hlt;
 	effect_t fx;
-	size_t _begin;
-	size_t _end;
 };
 
 template<typename T>
@@ -50,7 +49,12 @@ size_t Adjustment<T>::summary_string(char* buf, size_t buf_size){
 template<typename T>
 size_t Adjustment<T>::full_string(char* buf, size_t buf_size){
 	size_t i = snprintf(buf, buf_size, _fmt, *_adj->value());
-	fx(buf+_begin, buf+_end);
+	for(size_t j = 0; j < i; j++){
+		if(_hlt[j] - '0' == 0){
+			fx(buf[j]);
+		}
+	}
+	return i;
 }
 
 
