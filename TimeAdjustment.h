@@ -7,6 +7,7 @@
 #include <Arduino.h>
 #include <time.h>
 #include <string.h>
+#include <assert.h>
 
 template<bool Condition, typename T> struct Has { 
 	T v; 
@@ -14,7 +15,7 @@ template<bool Condition, typename T> struct Has {
 	T* V(){ return &v; }
 };
 template<typename T> struct Has<false,T> {
-	Has(T value){}
+	Has(T){}
 	T* V(){ return nullptr; }
 };
 
@@ -22,8 +23,8 @@ template<bool y = false, bool m = false, bool d = false, bool H = false, bool M 
 class TimeAdjustment: public AdjustmentBase {
 
 public:
-	TimeAdjustment(time_t* timestamp, const char* format, const char* highlight, effect_t fx):
-		_fmt(format), _hlt(highlight), fx(fx), _timep(timestamp),
+	TimeAdjustment(time_t* timestamp, const char* format, const char* highlight, const effect_t fx):
+		 _timep(timestamp), _fmt(format), _hlt(highlight), fx(fx),
 		_y(Adjuster<int16_t>(&_timex.tm_year, 100, 236, 1, false)),
 		_m(Adjuster<int8_t>(&_timex.tm_mon, 0, 12, 1, true)),
 		_d(Adjuster<int8_t>(&_timex.tm_mday, 0, 33, 1, true)),
@@ -49,13 +50,6 @@ public:
 		}
 	}
 
-	Has<y, Adjuster<int16_t>> _y;
-	Has<m, Adjuster<int8_t>> _m;
-	Has<d, Adjuster<int8_t>> _d;
-	Has<H, Adjuster<int8_t>> _H;
-	Has<M, Adjuster<int8_t>> _M;
-	Has<S, Adjuster<int8_t>> _S;
-
 	exit_t action(action_t act, int value = 0);
 
 	size_t summary_string(char* buf, size_t buf_size);
@@ -67,10 +61,17 @@ private:
 	tm _timex;
 	time_t* _timep;
 	AdjusterBase* _adj[_size];
-	volatile size_t _adj_idx = 0;
-	char* _fmt;
-	char* _hlt;
-	effect_t fx;
+	size_t _adj_idx = 0;
+	const char* _fmt;
+	const char* _hlt;
+	const effect_t fx;
+
+	Has<y, Adjuster<int16_t>> _y;
+	Has<m, Adjuster<int8_t>> _m;
+	Has<d, Adjuster<int8_t>> _d;
+	Has<H, Adjuster<int8_t>> _H;
+	Has<M, Adjuster<int8_t>> _M;
+	Has<S, Adjuster<int8_t>> _S;
 
 };
 
@@ -96,10 +97,13 @@ exit_t TimeAdjustment<y,m,d,H,M,S>::action(action_t act, int value){
 			return EXIT_SAVE;
 		}
 	case ACT_BACK:
-		_adj_idx == 0;
+		_adj_idx = 0;
 		return EXIT_CANCEL;
 	case ACT_CTXT:
 		return NOEXIT;
+	default:
+		assert(false);
+		return E_NONE;
 	}
 }
 
@@ -114,7 +118,7 @@ size_t TimeAdjustment<y,m,d,H,M,S>::full_string(char* buf, size_t buf_size){
 
 
 	for(size_t j = 0; j < i; j++){
-		if(_hlt[j] - '0' == _adj_idx){
+		if((unsigned)_hlt[j] - '0' == _adj_idx){
 			fx(buf[j]);
 		}
 	}
