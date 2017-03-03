@@ -3,12 +3,13 @@
 
 #include "Adjuster.h"
 #include "AdjustmentBase.h"
+#include <assert.h>
 #include <Arduino.h>
 
 template<typename T>
 class Adjustment: public AdjustmentBase {
 public:
-	Adjustment(Adjuster<T>* adjuster, char* format, char* highlight, effect_t fx):\
+	Adjustment(Adjuster<T>* adjuster, const char* format, const char* highlight, const effect_t fx):\
 			 _adj(adjuster), _fmt(format), _hlt(highlight), fx(fx) {};
 
 	exit_t action(action_t act, int value = 0);
@@ -19,31 +20,36 @@ public:
 
 private:
 	Adjuster<T>* _adj;
-	char* _fmt;
-	char* _hlt;
-	effect_t fx;
+	const char* _fmt;
+	const char* _hlt;
+	const effect_t fx;
 };
 
 template<typename T>
-exit_t Adjustment<T>::action(action_t act, int value = 0){
+exit_t Adjustment<T>::action(action_t act, int value){
 	switch(act){
 	case ACT_NONE:
-		return NO_EXIT;
+		return E_NONE;
+	case ACT_BEGIN:
+		return NOEXIT;
 	case ACT_CHANGE:
 		_adj->adjust(value);
-		return NO_EXIT;
+		return NOEXIT;
 	case ACT_ENTER:
 		return EXIT_SAVE;
 	case ACT_BACK:
 		return EXIT_CANCEL;
 	case ACT_CTXT:
-		return NO_EXIT;
+		return NOEXIT;
+	default:
+		assert(false);
+		return E_NONE;
 	}
 }
 
 template<typename T>
 size_t Adjustment<T>::summary_string(char* buf, size_t buf_size){
-	snprintf(buf, buf_size, _fmt, *_adj->value());
+	return snprintf(buf, buf_size, _fmt, *_adj->value());
 }
 
 template<typename T>

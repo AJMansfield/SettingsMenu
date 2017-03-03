@@ -3,18 +3,20 @@
 exit_t ChoiceAdjustment::action(action_t act, int value = 0){
 	switch(act){
 	case ACT_NONE:
-		return NO_EXIT;
+		return E_NONE;
+	case ACT_BEGIN:
+		return NOEXIT;
 	case ACT_CHANGE:
 		*_opt += value;
 		while((signed)*_opt < 0) *_opt += _max_opt;
 		*_opt %= _max_opt;
-		return NO_EXIT;
+		return NOEXIT;
 	case ACT_ENTER:
 		return EXIT_SAVE;
 	case ACT_BACK:
 		return EXIT_CANCEL;
 	case ACT_CTXT:
-		return NO_EXIT;
+		return NOEXIT;
 	}
 }
 

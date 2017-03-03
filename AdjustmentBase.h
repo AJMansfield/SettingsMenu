@@ -5,8 +5,8 @@
 
 #include <Arduino.h>
 
-enum action_t { ACT_NONE, ACT_CHANGE, ACT_ENTER, ACT_BACK, ACT_CTXT };
-enum exit_t { NO_EXIT, EXIT_SAVE, EXIT_CANCEL };
+enum action_t { ACT_NONE, ACT_BEGIN, ACT_CHANGE, ACT_ENTER, ACT_BACK, ACT_CTXT};
+enum exit_t { EXIT, EXIT_SAVE, EXIT_CANCEL, NOEXIT, NOEXIT_SAVE, NOEXIT_CANCEL, E_NONE };
 typedef void(*effect_t)(char&);
 
 class AdjustmentBase {

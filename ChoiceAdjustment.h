@@ -1,12 +1,12 @@
-#ifndef ADJUSTMENT_H
-#define ADJUSTMENT_H
+#ifndef CHOICEADJUSTMENT_H
+#define CHOICEADJUSTMENT_H
 
 #include "AdjustmentBase.h"
 #include <Arduino.h>
 
 class ChoiceAdjustment: public AdjustmentBase {
 public:
-	ChoiceAdjustment(size_t* choice, char** options, size_t opt_count, char* format, char* highlight, effect_t fx):
+	ChoiceAdjustment(size_t* choice, const char** options, const size_t opt_count, const char* format, const char* highlight, const effect_t fx):
 		_opt(choice), _opts(options), _max_opt(opt_count), _fmt(format), _hlt(highlight), fx(fx) {}
 
 	~ChoiceAdjustment(){}
@@ -20,12 +20,12 @@ public:
 private:
 
 	size_t* _opt;
-	char** _opts;
-	size_t _max_opt;
+	const char** _opts;
+	const size_t _max_opt;
 	
-	char* _fmt;
-	char* _hlt;
-	effect_t fx;
+	const char* _fmt;
+	const char* _hlt;
+	const effect_t fx;
 
 };
 

@@ -18,7 +18,7 @@ public:
 class DummyAdjuster: public AdjusterBase {
 public:
 
-	const static DummyAdjuster& getInstance(){
+	static DummyAdjuster& getInstance(){
 		static DummyAdjuster dummy;
 		return dummy;
 	}
@@ -40,8 +40,8 @@ public:
 
 	Adjuster(T* variable, T min_value, T max_value, T step_size,
 					bool wrap = false, AdjusterBase * chain = &DummyAdjuster::getInstance()):
-			_var(variable), _min(min_value), _max(max_value), _step(step_size),
-			_wrap(wrap), chain(chain) {};
+			chain(chain),
+			_var(variable), _min(min_value), _max(max_value), _step(step_size),	_wrap(wrap) {};
 	~Adjuster(){};
 	
 	void adjust(const int delta);
